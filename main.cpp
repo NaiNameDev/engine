@@ -27,7 +27,9 @@ void on_ready() {
 	t1.add_child(&t3);
 	t2.add_child(&t4);
 	t2.add_child(&t5);
+	
 	t1.print_tree_from_here(0);
+	t1.apply_to_tree([](Node* nd){ std::cout << nd->name << "\n";});
 }
 void process(float delta) {
 	//engine.print_fps_info();
