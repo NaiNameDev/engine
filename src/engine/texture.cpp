@@ -1,8 +1,8 @@
 #include <engine/texture.hpp>
 
-Texture::Texture(std::string path) {load_texture(path);}
+Engine::Texture::Texture(std::string path) {load_texture(path);}
 
-void Texture::load_texture(std::string path) {
+void Engine::Texture::load_texture(std::string path) {
 	unsigned char* tmp_texture = stbi_load(path.c_str(), &size_x, &size_y, &channels, 0);
 	if (tmp_texture == NULL) {
 		std::cerr << "ERR: Failed to load texture" << std::endl;

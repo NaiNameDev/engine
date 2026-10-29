@@ -1,6 +1,6 @@
 #include <engine/shader.hpp>
 
-std::string Shader::load_file(const char* path) {
+std::string Engine::Shader::load_file(const char* path) {
 	FILE* f = fopen(path, "r");
 	if (f == NULL) {
 		std::cerr << "ERROR: can not find file " << path << std::endl;
@@ -15,7 +15,7 @@ std::string Shader::load_file(const char* path) {
 
 	return ret;
 }
-void Shader::check_errors(unsigned int shader, std::string type) {
+void Engine::Shader::check_errors(unsigned int shader, std::string type) {
 	int success;
 	char infoLog[1024];
 	if (type != "PROGRAM") {
@@ -36,11 +36,11 @@ void Shader::check_errors(unsigned int shader, std::string type) {
 	}
 }
 
-Shader::~Shader() {
+Engine::Shader::~Shader() {
 	glDeleteProgram(program);
 }
 
-void Shader::attach_shader(std::string type, const char* path) {
+void Engine::Shader::attach_shader(std::string type, const char* path) {
 	const char* cstr_code = load_file(path).c_str();
 	
 	if (type == "VERTEX") {
@@ -85,11 +85,11 @@ void Shader::attach_shader(std::string type, const char* path) {
 	}
 }
 
-void Shader::init_shader_program() {
+void Engine::Shader::init_shader_program() {
 	program = glCreateProgram();
 }
 
-void Shader::create_shader_program() {
+void Engine::Shader::create_shader_program() {
 	glLinkProgram(program);
 	check_errors(program, "PROGRAM");
 	
@@ -98,25 +98,25 @@ void Shader::create_shader_program() {
 	}
 	tmp_shaders.clear();
 }
-void Shader::execute() {
+void Engine::Shader::execute() {
 	glUseProgram(program);
 }
-void Shader::compute_execute(unsigned int wgx, unsigned int wgy, unsigned int wgz) {
+void Engine::Shader::compute_execute(unsigned int wgx, unsigned int wgy, unsigned int wgz) {
 	execute();
 	glDispatchCompute(wgx, wgy, wgz);
 }
-void Shader::set_uniform(std::string name, glm::mat4 var){ 
+void Engine::Shader::set_uniform(std::string name, glm::mat4 var){ 
 	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, glm::value_ptr(var));
 }
-void Shader::set_uniform(std::string name, glm::vec3 var){ 
+void Engine::Shader::set_uniform(std::string name, glm::vec3 var){ 
 	glUniform3f(glGetUniformLocation(program, name.c_str()), var.x, var.y, var.z);
 }
-void Shader::set_uniform(std::string name, glm::vec2 var){ 
+void Engine::Shader::set_uniform(std::string name, glm::vec2 var){ 
 	glUniform2f(glGetUniformLocation(program, name.c_str()), var.x, var.y);
 }
-void Shader::set_uniform(std::string name, float var){ 
+void Engine::Shader::set_uniform(std::string name, float var){ 
 	glUniform1f(glGetUniformLocation(program, name.c_str()), var); 
 }
-void Shader::set_uniform(std::string name, int var){ 
+void Engine::Shader::set_uniform(std::string name, int var){ 
 	glUniform1i(glGetUniformLocation(program, name.c_str()), var); 
 }

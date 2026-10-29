@@ -1,10 +1,10 @@
 #include <engine/window.hpp>
 
-Window::Window(unsigned int nwidth, unsigned int nheight, std::string nname) {
+Engine::Window::Window(unsigned int nwidth, unsigned int nheight, std::string nname) {
 	width = nwidth; height = nheight; name = nname;
 }
 
-void Window::create_window() {
+void Engine::Window::create_window() {
 	glfw_window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
 	
 	if (glfw_window == NULL) {
@@ -24,34 +24,49 @@ void Window::create_window() {
 			glViewport(0, 0, w, h);
 		}
 	);
+	glfwSetCursorPosCallback(glfw_window, 
+		[](GLFWwindow* win, double x, double y) {
+			window_owner_table[win]->mouse_move_event.emit(x, y);
+		}
+	);
+	glfwSetMouseButtonCallback(glfw_window, 
+		[](GLFWwindow* win, int button, int action, int mods) {
+			window_owner_table[win]->mouse_button_event.emit(button, action);
+		}
+	);
+	glfwSetKeyCallback(glfw_window,
+		[](GLFWwindow* win, int key, int scancode, int action, int mods) {
+			window_owner_table[win]->key_press_event.emit(key, action);
+		}
+	);
 }
 
-void Window::destroy_window() {
+void Engine::Window::destroy_window() {
 	glfwDestroyWindow(glfw_window);
 }
 
-Window::~Window() {
+Engine::Window::~Window() {
 	destroy_window();
 }
 
-void Window::make_current() {
+void Engine::Window::make_current() {
 	glfwMakeContextCurrent(glfw_window);
 }
 
-void Window::clear() {
+void Engine::Window::clear() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
-void Window::swap_buffers() {
+void Engine::Window::swap_buffers() {
 	glfwSwapBuffers(glfw_window);
 	glfwPollEvents();
 }
-bool Window::should_close() {
+bool Engine::Window::should_close() {
 	return glfwWindowShouldClose(glfw_window);
 }
-bool Window::is_action_pressed(unsigned int action) {
+bool Engine::Window::is_action_pressed(unsigned int action) {
 	return glfwGetKey(glfw_window, action) == GLFW_PRESS;
 }
-bool Window::is_action_just_pressed(unsigned int action) {
+bool Engine::Window::is_action_just_pressed(unsigned int action) {
 	if (key_map[action] == false && (glfwGetKey(glfw_window, action) == GLFW_PRESS)) {
 		key_map[action] = true;
 		return true;

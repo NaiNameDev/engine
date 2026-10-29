@@ -1,15 +1,21 @@
-class Node {
-public:
-	std::string name;
+#pragma once
 
-	Node(std::string nnmae);
-	virtual ~Node();
+namespace Engine {
 
-	Node* parent;
-	std::vector<Node*> childs;
+	class Node {
+	public:
+		std::string name;
 
-	void apply_to_tree(void(func)(Node*));
+		Node(std::string nnmae);
+		Node();
 
-	void add_child(Node* child);
-	void print_tree_from_here(int depth);
+		Node* parent;
+		std::vector<Node*> childs;
+
+		void apply_to_tree(void(func)(Node*));
+
+		void add_child(Node* child);
+		void print_tree_from_here(int depth);
+	};
+
 };

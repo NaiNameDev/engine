@@ -2,11 +2,19 @@
 
 #include <engine/engine.hpp>
 #include <engine/node.hpp>
+#include <engine/ui/uielement.hpp>
 
-Engine engine(1280, 720, "engine");
+Engine::Engine engine(1280, 720, "engine");
 
 void mouse_event(double pos_x, double pos_y) {
-	std::cout << "velocity x " << pos_x << ", velocity y " << pos_y << "\n";
+	std::cout << "mouse pos update: " << pos_x << ", " << pos_y << "\n";
+}
+void key_press_event(int key, int action) {
+	if (key == GLFW_KEY_Q && action == GLFW_PRESS) engine.quit();
+	if (key == GLFW_KEY_T && action == GLFW_PRESS) std::cout << "T pressed\n";
+}
+void mouse_button_event(int button, int action) {
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) std::cout << "mouse pressed\n";
 }
 void resize_event(int w, int h) {
 	std::cout << "resize event: " << w << ", " << h << "\n";
@@ -15,25 +23,21 @@ void resize_event(int w, int h) {
 void on_ready() {
 	std::cout << "start!\n";
 
-	engine.global_mouse_event.connect(mouse_event);
+	engine.main_window.mouse_move_event.connect(mouse_event);
+	engine.main_window.mouse_button_event.connect(mouse_button_event);
+	engine.main_window.key_press_event.connect(key_press_event);
 	engine.main_window.resize_event.connect(resize_event);
 
-	Node t1("t1");
-	Node t2("t2");
-	Node t3("t3");
-	Node t4("t4");
-	Node t5("t5");
+	Engine::UI::UIElement t1;
+	Engine::Node t2;
+	Engine::Node t3;
 	t1.add_child(&t2);
 	t1.add_child(&t3);
-	t2.add_child(&t4);
-	t2.add_child(&t5);
 	
 	t1.print_tree_from_here(0);
-	t1.apply_to_tree([](Node* nd){ std::cout << nd->name << "\n";});
 }
 void process(float delta) {
 	//engine.print_fps_info();
-	if (engine.main_window.is_action_pressed(GLFW_KEY_Q)) engine.quit();
 }
 void on_quit() {
 	std::cout << "end!\n";
