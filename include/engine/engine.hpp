@@ -1,13 +1,14 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 
-#include <engine/window.hpp>
+#include <engine/scene.hpp>
 #include <engine/signal.hpp>
 
 namespace Engine {
@@ -17,16 +18,18 @@ namespace Engine {
 		float last; float current; float delta;
 
 	public:
-		Window main_window;
-
-		Engine(unsigned int width, unsigned int height, std::string app_name);
-		~Engine();
-
 		Signal<> ready_signal;
 		Signal<float> process_signal;
 		Signal<> quit_signal;
-		void run();
+		
+		std::unique_ptr<Scene> current_scene;
 
+		Engine();
+		~Engine();
+
+		void change_scene(Scene* ptr);
+		void run();
+		
 		bool early_exit;
 		void quit();
 

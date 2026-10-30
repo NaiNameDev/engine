@@ -1,44 +1,43 @@
 #include <engine/engine.hpp>
 
-Engine::Engine::Engine(unsigned int width, unsigned int height, std::string app_name)
-	: main_window(width, height, app_name), early_exit(false) {
+Engine::Engine::Engine()
+	: early_exit(false), current_scene(nullptr) {
 	if (!glfwInit()) {
 		std::cerr << "Failed to initialize GLFW\n";
 		exit(1);
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	main_window.create_window();
-	main_window.make_current();
-	
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cerr << "ERR: failed to initialize GLAD\n";
-		exit(1);
-	}
-	
-	glfwSetWindowSize(main_window.glfw_window, main_window.width, main_window.height);
-	
-	last = glfwGetTime();
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	
 }
 
 Engine::Engine::~Engine() {
 	glfwTerminate();
 }
 
+void Engine::Engine::change_scene(Scene* ptr) {
+	current_scene.reset(ptr);
+}
+
 void Engine::Engine::run() {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cerr << "ERR: failed to initialize GLAD\n";
+		exit(1);
+	}
+	
+	last = glfwGetTime();
+	
 	ready_signal.emit();
-	while(!main_window.should_close()) {
+	while(!current_scene->window.should_close()) {
 		current = (float)glfwGetTime();
 		delta = current - last;
 		last = current;
 
-		main_window.clear();
+		current_scene->window.clear();
 		
 		process_signal.emit(delta);
 
-		main_window.swap_buffers();
+		current_scene->window.swap_buffers();
 		
 		if (early_exit) break;
 	}

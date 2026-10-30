@@ -2,9 +2,10 @@
 
 #include <engine/engine.hpp>
 #include <engine/node.hpp>
+#include <engine/scene.hpp>
 #include <engine/ui/uielement.hpp>
 
-Engine::Engine engine(1280, 720, "engine");
+Engine::Engine engine;
 
 void mouse_event(double pos_x, double pos_y) {
 	std::cout << "mouse pos update: " << pos_x << ", " << pos_y << "\n";
@@ -23,10 +24,10 @@ void resize_event(int w, int h) {
 void on_ready() {
 	std::cout << "start!\n";
 
-	engine.main_window.mouse_move_event.connect(mouse_event);
-	engine.main_window.mouse_button_event.connect(mouse_button_event);
-	engine.main_window.key_press_event.connect(key_press_event);
-	engine.main_window.resize_event.connect(resize_event);
+	engine.current_scene->window.mouse_move_event.connect(mouse_event);
+	engine.current_scene->window.mouse_button_event.connect(mouse_button_event);
+	engine.current_scene->window.key_press_event.connect(key_press_event);
+	engine.current_scene->window.resize_event.connect(resize_event);
 
 	Engine::UI::UIElement t1;
 	Engine::Node t2;
@@ -44,6 +45,8 @@ void on_quit() {
 }
 
 int main() {
+	engine.change_scene(new Engine::Scene(1280, 720, "main scene window"));
+	
 	engine.ready_signal.connect(on_ready);
 	engine.process_signal.connect(process);
 	engine.quit_signal.connect(on_quit);
